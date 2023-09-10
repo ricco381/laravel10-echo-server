@@ -191,7 +191,7 @@ export class Cli {
             },
             {
                 name: "allowOrigin",
-                default: "http://localhost:80",
+                default: ["http://localhost"],
                 message: "Specify the URI that may access the API:",
                 when: function(options) {
                     return options.corsAllow == true;
@@ -199,7 +199,7 @@ export class Cli {
             },
             {
                 name: "allowMethods",
-                default: "GET, POST",
+                default: "GET, POST, OPTIONS",
                 message: "Enter the HTTP methods that are allowed for CORS:",
                 when: function(options) {
                     return options.corsAllow == true;
@@ -207,8 +207,7 @@ export class Cli {
             },
             {
                 name: "allowHeaders",
-                default:
-                    "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id",
+                default: "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id",
                 message: "Enter the HTTP headers that are allowed for CORS:",
                 when: function(options) {
                     return options.corsAllow == true;

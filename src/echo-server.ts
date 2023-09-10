@@ -1,13 +1,14 @@
-import { HttpSubscriber, RedisSubscriber, Subscriber } from './subscribers';
-import { Channel } from './channels';
-import { Server } from './server';
-import { HttpApi } from './api';
-import { Log } from './log';
+import {HttpSubscriber, RedisSubscriber, Subscriber} from './subscribers';
+import {Channel} from './channels';
+import {Server} from './server';
+import {HttpApi} from './api';
+import {Log} from './log';
 import * as fs from 'fs';
+
 const packageFile = require('../package.json');
-const { constants } = require('crypto');
-const { createAdapter } = require("@socket.io/redis-adapter");
-const { createClient } = require("redis");
+const {constants} = require('crypto');
+const {createAdapter} = require("@socket.io/redis-adapter");
+const {createClient} = require("redis");
 
 /**
  * Echo server class.
@@ -22,7 +23,11 @@ export class EchoServer {
         clients: [],
         database: 'redis',
         databaseConfig: {
-            redis: {},
+            redis: {
+                host: '127.0.0.1',
+                port: 6379,
+                password: null,
+            },
             sqlite: {
                 databasePath: '/database/laravel-echo-server.sqlite'
             }
@@ -41,11 +46,12 @@ export class EchoServer {
             http: true,
             redis: true
         },
+        horizontalScaling: false,
         apiOriginAllow: {
             allowCors: false,
-            allowOrigin: '',
-            allowMethods: '',
-            allowHeaders: ''
+            allowOrigin: [],
+            allowMethods: [],
+            allowHeaders: []
         }
     };
 
@@ -77,7 +83,8 @@ export class EchoServer {
     /**
      * Create a new instance.
      */
-    constructor() { }
+    constructor() {
+    }
 
     /**
      * Start the Echo Server.
@@ -92,14 +99,21 @@ export class EchoServer {
             this.server.init().then(io => {
                 this.init(io).then(async () => {
                     Log.info('\nServer ready!\n');
-                    const pubClient = createClient({ url: "redis://redis5:5010" });
-                    const subClient = pubClient.duplicate();
-                    await Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-                        Log.info('Pub/Sub Created');
-                        io.adapter(createAdapter(pubClient, subClient));
-                        Log.info('Redis Adapter Connected');
-                        resolve(this);
-                    });
+
+                    if (this.options.horizontalScaling === true) {
+                        const {redis} = this.options.databaseConfig;
+
+                        const pubClient = createClient({url: "redis://" + redis.host + ":" + redis.post});
+                        const subClient = pubClient.duplicate();
+
+                        await Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+                            Log.info('Pub/Sub Created');
+                            io.adapter(createAdapter(pubClient, subClient));
+                            Log.info('Redis Adapter Connected');
+                        });
+                    }
+
+                    resolve(this);
                 }, error => Log.error(error));
             }, error => Log.error(error));
         });
