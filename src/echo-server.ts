@@ -49,9 +49,9 @@ export class EchoServer {
         horizontalScaling: false,
         apiOriginAllow: {
             allowCors: false,
-            allowOrigin: [],
-            allowMethods: [],
-            allowHeaders: []
+            allowOrigin: '',
+            allowMethods: '',
+            allowHeaders: ''
         }
     };
 
