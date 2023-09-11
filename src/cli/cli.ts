@@ -38,7 +38,8 @@ export class Cli {
         LARAVEL_ECHO_SERVER_SSL_CERT: "sslCertPath",
         LARAVEL_ECHO_SERVER_SSL_KEY: "sslKeyPath",
         LARAVEL_ECHO_SERVER_SSL_CHAIN: "sslCertChainPath",
-        LARAVEL_ECHO_SERVER_SSL_PASS: "sslPassphrase"
+        LARAVEL_ECHO_SERVER_SSL_PASS: "sslPassphrase",
+        LARAVEL_ECHO_HORIZONTALS_SCALING: "horizontalScaling"
     };
 
     /**
@@ -79,13 +80,13 @@ export class Cli {
                     file => {
                         console.log(
                             "Configuration file saved. Run " +
-                                colors.magenta.bold(
-                                    "laravel-echo-server start" +
-                                        (file != "laravel-echo-server.json"
-                                            ? ' --config="' + file + '"'
-                                            : "")
-                                ) +
-                                " to run server."
+                            colors.magenta.bold(
+                                "laravel-echo-server start" +
+                                (file != "laravel-echo-server.json"
+                                    ? ' --config="' + file + '"'
+                                    : "")
+                            ) +
+                            " to run server."
                         );
 
                         process.exit();
@@ -118,6 +119,7 @@ export class Cli {
                 }
 
                 if ((replacementVar = value.match(/\${(.*?)}/))) {
+
                     value = (process.env[replacementVar[1]] || "").toString();
                 }
 
@@ -165,14 +167,14 @@ export class Cli {
             {
                 name: "sslCertPath",
                 message: "Enter the path to your SSL cert file.",
-                when: function(options) {
+                when: function (options) {
                     return options.protocol == "https";
                 }
             },
             {
                 name: "sslKeyPath",
                 message: "Enter the path to your SSL key file.",
-                when: function(options) {
+                when: function (options) {
                     return options.protocol == "https";
                 }
             },
@@ -191,9 +193,9 @@ export class Cli {
             },
             {
                 name: "allowOrigin",
-                default: ["http://localhost"],
+                default: "http://localhost",
                 message: "Specify the URI that may access the API:",
-                when: function(options) {
+                when: function (options) {
                     return options.corsAllow == true;
                 }
             },
@@ -201,7 +203,7 @@ export class Cli {
                 name: "allowMethods",
                 default: "GET, POST, OPTIONS",
                 message: "Enter the HTTP methods that are allowed for CORS:",
-                when: function(options) {
+                when: function (options) {
                     return options.corsAllow == true;
                 }
             },
@@ -209,7 +211,7 @@ export class Cli {
                 name: "allowHeaders",
                 default: "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id",
                 message: "Enter the HTTP headers that are allowed for CORS:",
-                when: function(options) {
+                when: function (options) {
                     return options.corsAllow == true;
                 }
             },
@@ -321,8 +323,8 @@ export class Cli {
                             console.log(
                                 colors.yellow(
                                     "Warning: Closing process " +
-                                        lockProcess +
-                                        " because you used the '--force' option."
+                                    lockProcess +
+                                    " because you used the '--force' option."
                                 )
                             );
                         } else {
@@ -342,7 +344,7 @@ export class Cli {
 
             fs.writeFile(
                 lockFile,
-                JSON.stringify({ process: process.pid }, null, "\t"),
+                JSON.stringify({process: process.pid}, null, "\t"),
                 error => {
                     if (error) {
                         console.error(
@@ -355,7 +357,8 @@ export class Cli {
                     process.on("exit", () => {
                         try {
                             fs.unlinkSync(lockFile);
-                        } catch {}
+                        } catch {
+                        }
                     });
 
                     process.on("SIGINT", () => process.exit());

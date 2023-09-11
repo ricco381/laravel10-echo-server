@@ -41,6 +41,12 @@ export class PrivateChannel {
                 Authorization: 'Bearer ' + auth['token']
             }
         }
+
+        if (this.options.devMode) {
+            Log.info("addTokenAuthorization: " + JSON.stringify(socket.handshake));
+        }
+
+        return {};
     }
 
     /**

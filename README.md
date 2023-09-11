@@ -22,7 +22,7 @@ Official docs: <https://socket.io/docs/v4/redis-adapter>
 Install npm package globally with the following command:
 
 ``` shell
-$   npm install -g laravel-echo-server
+$   npm install
 ```
 
 ### Initialize with CLI Tool
@@ -30,7 +30,7 @@ $   npm install -g laravel-echo-server
 Run the init command in your project directory:
 
 ``` shell
-$   laravel-echo-server init
+$   node bin/server.js init
 ```
 
 The cli tool will help you setup a **laravel-echo-server.json** file in the root directory of your project. This file will be loaded by the server during start up. You may edit this file later on to manage the configuration of your server.
@@ -40,7 +40,7 @@ The cli tool will help you setup a **laravel-echo-server.json** file in the root
 The Laravel Echo Server exposes a light http API to perform broadcasting functionality. For security purposes, access to these endpoints from http referrers must be authenticated with an APP id and key. This can be generated using the cli command:
 
 ``` shell
-$ laravel-echo-server client:add APP_ID
+$ node bin/server.js client:add APP_ID
 ```
 
 If you run `client:add` without an app id argument, one will be generated for you. After running this command, the client id and key will be displayed and stored in the **laravel-echo-server.json** file.
@@ -57,14 +57,14 @@ or
 http://app.dev:6001/apps/APP_ID/channels?auth_key=skti68i...
 ```
 
-You can remove clients with `laravel-echo-server client:remove APP_ID`
+You can remove clients with `node bin/server.js client:remove APP_ID`
 
 #### Run The Server
 
 in your project root directory, run
 
 ``` shell
-$ laravel-echo-server start
+$ node bin/server.js start
 ```
 
 #### Stop The Server
@@ -72,7 +72,7 @@ $ laravel-echo-server start
 in your project root directory, run
 
 ``` shell
-$ laravel-echo-server stop
+$ node bin/server.js stop
 ```
 
 ### Configurable Options
@@ -80,23 +80,24 @@ $ laravel-echo-server stop
 Edit the default configuration of the server by adding options to your **laravel-echo-server.json** file.
 
 
-| Title              | Default              | Description                 |
-| :------------------| :------------------- | :---------------------------|
-| `apiOriginAllow`   | `{}`                 | Configuration to allow API be accessed over CORS. [Example](#cross-domain-access-to-api) |
-| `authEndpoint`     | `/broadcasting/auth` | The route that authenticates private channels  |
-| `authHost`         | `http://localhost`   | The host of the server that authenticates private and presence channels  |
-| `database`         | `redis`              | Database used to store data that should persist, like presence channel members. Options are currently `redis` and `sqlite` |
-| `databaseConfig`   |  `{}`                | Configurations for the different database drivers [Example](#database) |
-| `devMode`          | `false`              | Adds additional logging for development purposes |
-| `host`             | `null`               | The host of the socket.io server ex.`app.dev`. `null` will accept connections on any IP-address |
-| `port`             | `6001`               | The port that the socket.io server should run on |
-| `protocol`         | `http`               | Must be either `http` or `https` |
-| `sslCertPath`      | `''`                 | The path to your server's ssl certificate |
-| `sslKeyPath`       | `''`                 | The path to your server's ssl key |
-| `sslCertChainPath` | `''`                 | The path to your server's ssl certificate chain |
-| `sslPassphrase`    | `''`                 | The pass phrase to use for the certificate (if applicable) |
-| `socketio`         | `{}`                 | Options to pass to the socket.io instance ([available options](https://github.com/socketio/engine.io#methods-1)) |
+| Title              | Default                         | Description                 |
+| :------------------|:--------------------------------| :---------------------------|
+| `apiOriginAllow`   | `{}`                            | Configuration to allow API be accessed over CORS. [Example](#cross-domain-access-to-api) |
+| `authEndpoint`     | `/broadcasting/auth`            | The route that authenticates private channels  |
+| `authHost`         | `http://localhost`              | The host of the server that authenticates private and presence channels  |
+| `database`         | `redis`                         | Database used to store data that should persist, like presence channel members. Options are currently `redis` and `sqlite` |
+| `databaseConfig`   | `{}`                            | Configurations for the different database drivers [Example](#database) |
+| `devMode`          | `false`                         | Adds additional logging for development purposes |
+| `host`             | `null`                          | The host of the socket.io server ex.`app.dev`. `null` will accept connections on any IP-address |
+| `port`             | `6001`                          | The port that the socket.io server should run on |
+| `protocol`         | `http`                          | Must be either `http` or `https` |
+| `sslCertPath`      | `''`                            | The path to your server's ssl certificate |
+| `sslKeyPath`       | `''`                            | The path to your server's ssl key |
+| `sslCertChainPath` | `''`                            | The path to your server's ssl certificate chain |
+| `sslPassphrase`    | `''`                            | The pass phrase to use for the certificate (if applicable) |
+| `socketio`         | `{}`                            | Options to pass to the socket.io instance ([available options](https://github.com/socketio/engine.io#methods-1)) |
 | `subscribers`      | `{"http": true, "redis": true}` | Allows to disable subscribers individually. Available subscribers: `http` and `redis` |
+| `horizontalScaling`| `false`                         | Allow horizontal zooming `redis` |
 
 ### DotEnv
 If a .env file is found in the same directory as the laravel-echo-server.json
@@ -114,6 +115,7 @@ file, the following options can be overridden:
 - `sslCertPath`: `LARAVEL_ECHO_SERVER_SSL_CERT`
 - `sslPassphrase`: `LARAVEL_ECHO_SERVER_SSL_PASS`
 - `sslCertChainPath`: `LARAVEL_ECHO_SERVER_SSL_CHAIN`
+- `horizontalScaling`: `LARAVEL_ECHO_HORIZONTALS_SCALING`
 
 
 ### Running with SSL
