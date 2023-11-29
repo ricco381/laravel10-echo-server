@@ -249,6 +249,7 @@ export class EchoServer {
      */
     onUnsubscribe(socket: any): void {
         socket.on('unsubscribe', data => {
+            console.log('onUnsubscribe', data)
             this.channel.leave(socket, data.channel, 'unsubscribed');
         });
     }
@@ -258,7 +259,7 @@ export class EchoServer {
      */
     onDisconnecting(socket: any): void {
         socket.on('disconnecting', (reason) => {
-            Object.keys(socket.rooms).forEach(room => {
+            socket.rooms.forEach(room => {
                 if (room !== socket.id) {
                     this.channel.leave(socket, room, reason);
                 }
